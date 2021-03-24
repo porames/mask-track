@@ -1,7 +1,7 @@
 import React from 'react'
 import mapboxgl from 'mapbox-gl'
 import Head from 'next/head'
-
+import firebase from 'firebase'
 export default class Map extends React.Component {
     constructor(props) {
         super(props)
@@ -12,6 +12,11 @@ export default class Map extends React.Component {
             hoveredData: null
         };
         this.map
+    }
+    async fetchData() {
+        const db = firebase.firestore()
+        await db.collection('app').doc('data').collection('survey')
+            .where('timestamp', '>=', new Date(Date.now() - 14 * 24 * 60 * 60 * 1000))
     }
     componentDidMount() {
         mapboxgl.accessToken = process.env.NEXT_PUBLIC_mapboxKey
@@ -116,7 +121,7 @@ export default class Map extends React.Component {
                 <Head>
                     <link href='https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.css' rel='stylesheet' />
                 </Head>
-                <div ref={el => this.mapContainer = el} className='mapContainer' style={{height: '100vh'}}>
+                <div ref={el => this.mapContainer = el} className='mapContainer' style={{ height: '100vh' }}>
                     <div onClick={() => this.resetMap()} className='reset-button'>
                         <button className='btn-icon'><img src='/fullscreen_exit-black.svg' alt='reset zoom' /></button>
                     </div>

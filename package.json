@@ -12,6 +12,7 @@
     "bootstrap": "^4.6.0",
     "del": "^6.0.0",
     "firebase": "^8.3.1",
+    "firebase-admin": "^9.5.0",
     "formik": "^2.2.6",
     "gulp": "^4.0.2",
     "gulp-sass": "^4.1.0",
