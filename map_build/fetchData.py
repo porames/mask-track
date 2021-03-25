@@ -4,6 +4,8 @@ from firebase_admin import firestore
 import datetime
 import json
 import os
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
 
 cred = credentials.Certificate({
   "type": "service_account",
