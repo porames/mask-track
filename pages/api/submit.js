@@ -26,13 +26,16 @@ export default async (req, res) => {
       const latlng = geocoding.data.features[0]['center']
       const address = geocoding.data.features[0]['place_name']
 
-      db.collection('app').doc('data').collection('survey').add({
+      await db.collection('app').doc('data').collection('survey').add({
         heat: Number(score) / 5,
         timestamp: admin.firestore.FieldValue.serverTimestamp(),
         latlng: latlng,
         postcode: postcode,
         uid: userData.uid,
         address: address
+      })
+      await db.collection('app').doc('data').update({
+        responses: admin.firestore.FieldValue.increment(1)
       })
       console.log('done')
       res.status(200).send({ message: 'success' })

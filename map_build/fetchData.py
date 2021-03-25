@@ -13,7 +13,7 @@ cred = credentials.Certificate({
   "type": "service_account",
   "project_id": "mask-track-72ee8",
   "private_key_id": "2d9c8906c7c8c72839c48d2acd3e21388426e1e8",
-  "private_key": os.getenv('FIREBASE_PRIVATE_KEY'),
+  "private_key": os.getenv('FIREBASE_PRIVATE_KEY').replace('\\n', '\n').replace('\\\\n', '\\n'),
   "client_email": "firebase-adminsdk-lmt1c@mask-track-72ee8.iam.gserviceaccount.com",
   "client_id": "111191150103797745142",
   "auth_uri": "https://accounts.google.com/o/oauth2/auth",
@@ -29,6 +29,7 @@ timequery = datetime.datetime.now() - datetime.timedelta(days=7)
 features = []
 
 docs = db.collection('app').document('data').collection('survey').where('timestamp','>=',timequery).get()
+print(len(docs))
 for doc in docs:
     data=doc.to_dict()
     features.append({
