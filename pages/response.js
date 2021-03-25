@@ -144,7 +144,7 @@ export default function Response() {
                 .where('timestamp', '>=', today)
                 .get()
                 .then((snap) => {
-                    
+
                     if (!snap.empty) {
                         setTimestamp(snap.docs.pop().data().timestamp.toDate())
                         setResponded(true)
@@ -158,6 +158,18 @@ export default function Response() {
         <div className='container py-5' style={{ maxWidth: 720 }}>
             <Head>
                 <title>แบบสำรวจการใส่หน้ากากอนามัยของคนไทย</title>
+                <meta name="title" content="แบบสำรวจการใส่หน้ากากอนามัยของคนไทย" />
+                <meta name="description" content="แบบสำรวจนี้จัดทำโดยนักศึกษามหาวิทยาลัยมหิดล ในรายวิชา มมศท 100 เพื่อนำข้อมูลไปวิเคราะห์ความร่วมมือการใส่หน้ากากอนามัยของคนในพื้นที่ต่าง ๆ ทั่วประเทศไทย ซึ่งจะเป็นประโยชน์ต่อการวางนโยบายควบคุมโรค COVID-19" />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content="https://mask-track.vercel.app/response" />
+                <meta property="og:title" content="แบบสำรวจการใส่หน้ากากอนามัยของคนไทย" />
+                <meta property="og:description" content="แบบสำรวจนี้จัดทำโดยนักศึกษามหาวิทยาลัยมหิดล ในรายวิชา มมศท 100 เพื่อนำข้อมูลไปวิเคราะห์ความร่วมมือการใส่หน้ากากอนามัยของคนในพื้นที่ต่าง ๆ ทั่วประเทศไทย ซึ่งจะเป็นประโยชน์ต่อการวางนโยบายควบคุมโรค COVID-19" />
+                <meta property="og:image" content="https://mask-track.vercel.app/cover.png" />
+                <meta property="twitter:card" content="summary_large_image" />
+                <meta property="twitter:url" content="https://mask-track.vercel.app/response" />
+                <meta property="twitter:title" content="แบบสำรวจการใส่หน้ากากอนามัยของคนไทย" />
+                <meta property="twitter:description" content="แบบสำรวจนี้จัดทำโดยนักศึกษามหาวิทยาลัยมหิดล ในรายวิชา มมศท 100 เพื่อนำข้อมูลไปวิเคราะห์ความร่วมมือการใส่หน้ากากอนามัยของคนในพื้นที่ต่าง ๆ ทั่วประเทศไทย ซึ่งจะเป็นประโยชน์ต่อการวางนโยบายควบคุมโรค COVID-19" />
+                <meta property="twitter:image" content="https://mask-track.vercel.app/cover.png" />
             </Head>
             <h3 className='text-center'>แบบสำรวจการใส่หน้ากากอนามัยของคนไทย</h3>
             <Modal show={loading}>
@@ -197,7 +209,7 @@ export default function Response() {
                 <div>
                     <div className='alert text-center mt-4 py-5 alert-secondary'>
                         <h4>
-                            ได้รับข้อมูลของท่านแล้ว ขอขอบคุณที่ให้ความร่วมมือ                            
+                            ได้รับข้อมูลของท่านแล้ว ขอขอบคุณที่ให้ความร่วมมือ
                         </h4>
                         <span>บันทึกข้อมูลเมื่อ {moment(timestamp).locale('th').fromNow()}</span>
                     </div>
@@ -209,7 +221,7 @@ export default function Response() {
                     <img className='social' src='/facebook.svg' />
                 </a>
                 <a href="https://social-plugins.line.me/lineit/share?url=https%3A%2F%2Fmask-track.vercel.app%2Fresponse">
-                <img className='social' src='/line.svg' />
+                    <img className='social' src='/line.svg' />
                 </a>
                 <a href="https://twitter.com/intent/tweet?text=https://mask-track.vercel.app/response">
                     <img className='social' src='/twitter.svg' />
