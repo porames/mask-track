@@ -7,6 +7,7 @@
 
 
 /map_build/serviceAccount.json
+/map_build/.env
 # testing
 /coverage
 
