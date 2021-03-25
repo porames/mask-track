@@ -6,9 +6,9 @@ export default function Home() {
       <Head>
         <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&display=swap" rel="stylesheet" />
-        <title>Hello</title>
+        <title>แผนที่การใส่หน้ากากของคนไทย</title>
       </Head>
-      <Map />
+      <h2>อยู่ระหว่างการพัฒนา</h2>
     </div>
   )
 }
