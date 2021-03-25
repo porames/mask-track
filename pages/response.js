@@ -6,6 +6,7 @@ import ReCAPTCHA from "react-google-recaptcha"
 import Link from 'next/link'
 import Modal from 'react-bootstrap/Modal'
 import Head from 'next/head'
+import moment from 'moment'
 const TextField = (props) => (
     <div>
         <label htmlFor={props.id}>{props.label}</label>
@@ -70,7 +71,6 @@ const MaskForm = (props) => {
                     setModalState(true)
                     const token = await recaptcha.current.executeAsync();
                     const userToken = await firebase.auth().currentUser.getIdToken()
-                    console.log(userToken)
                     const req = await axios.post('/api/submit', {
                         token: token,
                         postcode: values.postcode,
@@ -80,7 +80,6 @@ const MaskForm = (props) => {
                             Authorization: userToken
                         }
                     })
-                    console.log(req.data)
                     setModalState(false)
                     setResponded(true)
                 }
@@ -131,20 +130,46 @@ const MaskForm = (props) => {
 
 export default function Response() {
     const [responded, setResponded] = useState(false)
+    const [loading, setLoading] = useState(true)
+    const [timestamp, setTimestamp] = useState(undefined)
     useEffect(() => {
         firebase.auth().signInAnonymously().then(() => {
-            console.log('signed in anonymously')
+            setLoading(false)
+            const uid = firebase.auth().currentUser.uid
+            const db = firebase.firestore()
+            var today = new Date()
+            today.setHours(0, 0, 0, 0)
+            db.collection('app').doc('data').collection('survey')
+                .where('uid', '==', uid)
+                .where('timestamp', '>=', today)
+                .get()
+                .then((snap) => {
+                    
+                    if (!snap.empty) {
+                        setTimestamp(snap.docs.pop().data().timestamp.toDate())
+                        setResponded(true)
+                    }
+                })
         }).catch((err) => {
             console.log(err)
         })
     })
     return (
-        <div className='container pt-5' style={{ maxWidth: 720 }}>
+        <div className='container py-5' style={{ maxWidth: 720 }}>
             <Head>
                 <title>แบบสำรวจการใส่หน้ากากอนามัยของคนไทย</title>
             </Head>
             <h3 className='text-center'>แบบสำรวจการใส่หน้ากากอนามัยของคนไทย</h3>
+            <Modal show={loading}>
+                <Modal.Body>
+                    <div className='container text-center py-3'>
+                        <div className="spinner-border text-primary" role="status">
+                            <span className="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </Modal.Body>
 
+            </Modal>
             {responded === false &&
                 <div>
                     <div className='alert alert-warning my-3'>
@@ -171,12 +196,25 @@ export default function Response() {
             {responded === true &&
                 <div>
                     <div className='alert text-center mt-4 py-5 alert-secondary'>
-                        <h4 className='mb-0'>
-                            ได้รับข้อมูลของท่านแล้ว ขอขอบคุณที่ให้ความร่วมมือ
+                        <h4>
+                            ได้รับข้อมูลของท่านแล้ว ขอขอบคุณที่ให้ความร่วมมือ                            
                         </h4>
+                        <span>บันทึกข้อมูลเมื่อ {moment(timestamp).locale('th').fromNow()}</span>
                     </div>
                 </div>
             }
+            <h5 className='text-center mt-4 text-muted'>ช่วยแชร์โครงการนี้</h5>
+            <div className='container justify-content-center d-flex'>
+                <a href="https://www.facebook.com/sharer/sharer.php?u=https://mask-track.vercel.app/response" target="_blank">
+                    <img className='social' src='/facebook.svg' />
+                </a>
+                <a href="https://social-plugins.line.me/lineit/share?url=https%3A%2F%2Fmask-track.vercel.app%2Fresponse">
+                <img className='social' src='/line.svg' />
+                </a>
+                <a href="https://twitter.com/intent/tweet?text=https://mask-track.vercel.app/response">
+                    <img className='social' src='/twitter.svg' />
+                </a>
+            </div>
         </div>
     )
 }

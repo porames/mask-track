@@ -19,17 +19,20 @@ export default async (req, res) => {
       if (!captcha.data.success) {
         return res.status(401).send({ message: 'unauthorized' })
       }
-      const geocoding = await axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${postcode}.json?access_token=${process.env.NEXT_PUBLIC_mapboxKey}&country=th&types=postcode`)
+      const geocoding = await axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${postcode}.json?access_token=${process.env.NEXT_PUBLIC_mapboxKey}&country=th&types=postcode&language=th`)
       if (geocoding.data.features.length == 0) {
         return res.status(400).send({ message: 'postcode invalid' })
       }
       const latlng = geocoding.data.features[0]['center']
+      const address = geocoding.data.features[0]['place_name']
 
       db.collection('app').doc('data').collection('survey').add({
         heat: Number(score) / 5,
         timestamp: admin.firestore.FieldValue.serverTimestamp(),
         latlng: latlng,
-        uid: userData.uid
+        postcode: postcode,
+        uid: userData.uid,
+        address: address
       })
       console.log('done')
       res.status(200).send({ message: 'success' })
