@@ -5,6 +5,7 @@ import datetime
 import json
 import os
 from dotenv import load_dotenv, find_dotenv
+import requests
 
 if(find_dotenv()!=''):
   load_dotenv(find_dotenv())
@@ -21,7 +22,7 @@ cred = credentials.Certificate({
   "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-lmt1c%40mask-track-72ee8.iam.gserviceaccount.com"
 })
-print(cred)
+
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
@@ -32,10 +33,22 @@ docs = db.collection('app').document('data').collection('survey').where('timesta
 print(len(docs))
 for doc in docs:
     data=doc.to_dict()
+    if("address" not in data):
+      r=requests.get("https://api.mapbox.com/geocoding/v5/mapbox.places/"+str(data['latlng'][0])+","+str(data['latlng'][1])+".json?access_token="+str(os.getenv('mapboxKey'))+"&country=th&types=postcode&language=th")
+      postcode=r.json()['features'][0]["text"]
+      address=r.json()['features'][0]["place_name"]      
+      db.collection('app').document('data').collection('survey').document(doc.id).set({
+        'address': address,
+        'postcode': postcode
+      },merge=True)
+      print(doc.id)
+      
     features.append({
       "type": "Feature",
       "properties": {
-          "score": data['heat']
+          "score": data['heat'],
+          "address": data['address'],
+          "postcode": data["postcode"]
       },
       "geometry": {
         "type": "Point",
