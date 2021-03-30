@@ -2,6 +2,7 @@ import React from 'react'
 import mapboxgl from 'mapbox-gl'
 import Head from 'next/head'
 import firebase from 'firebase'
+import dataset from '../map_build/exports/dataset-exported.json'
 export default class Map extends React.Component {
     constructor(props) {
         super(props)
@@ -19,6 +20,7 @@ export default class Map extends React.Component {
             .where('timestamp', '>=', new Date(Date.now() - 14 * 24 * 60 * 60 * 1000))
     }
     componentDidMount() {
+        console.log(dataset)
         mapboxgl.accessToken = process.env.NEXT_PUBLIC_mapboxKey
         this.map = new mapboxgl.Map({
             container: this.mapContainer,
@@ -28,7 +30,6 @@ export default class Map extends React.Component {
             maxBounds: [[83.271483, 4], [117, 22]],
             minZoom: 3,
         });
-        this.map.scrollZoom.disable()
         this.map.dragRotate.disable()
         this.map.touchZoomRotate.disableRotation()
         this.map.addControl(new mapboxgl.NavigationControl({ showCompass: false, showZoom: true }))
@@ -40,8 +41,6 @@ export default class Map extends React.Component {
             });
         });
         this.map.on('load', () => {
-            // Add a geojson point source.
-            // Heatmap layers also work with a vector tile source.
             this.map.addSource('provinces', {
                 type: 'vector',
                 url: 'mapbox://townhall-th.c5vzwe91'
@@ -49,10 +48,6 @@ export default class Map extends React.Component {
             this.map.addSource('provinces-label', {
                 type: 'vector',
                 url: 'mapbox://townhall-th.72khtg8y'
-            })
-            this.map.addSource('cases', {
-                type: 'vector',
-                url: 'mapbox://townhall-th.7ozyo5pa'
             })
             this.map.addLayer({
                 'id': 'provinces-outline',
@@ -111,9 +106,45 @@ export default class Map extends React.Component {
                     'text-halo-color': '#424242'
                 }
             })
+
+            this.map.addSource('datapoints', {
+                type: 'geojson',
+                data: dataset
+            })
+            this.map.addLayer({
+                type: 'circle',
+                id: 'datapoints',
+                source: 'datapoints',
+                paint: {
+                    'circle-radius': {
+                        'base': 15,
+                        'stops': [
+                            [12, 5],
+                            [22, 10]
+                        ]
+                    },
+                    'circle-color': ['interpolate', ['linear'],
+                        ['get','score-avg'],
+                        0,
+                        '#e9002c',
+                        0.2,
+                        '#ff9b94',
+                        0.4,
+                        '#ffffe0',
+                        0.6,
+                        '#b9e8ce',
+                        1,
+                        '#67d0bd'
+                    ]
+                }
+            })
+            this.map.on('mousemove', 'datapoints', (e) => {
+                if (e.features.length > 0) {
+                    console.log(e.features[0]['properties']['score-avg'])
+                }
+            })
         }
         )
-
     }
     render() {
         return (

@@ -62,6 +62,6 @@ geojson = {
 }   
 
 
-f=open("exports/dataset.geojson","w")
+f=open("exports/dataset.json","w")
 f.write(json.dumps(geojson))
 f.close()
